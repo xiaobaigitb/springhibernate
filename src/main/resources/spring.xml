@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx.xsd
+          http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--数据库连接-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/test"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="123"></property>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+
+        <!--注入datasource-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--告诉spring，引入hibernate配置文件-->
+        <property name="configLocation" value="classpath:hibernate.cfg.xml"></property>
+    </bean>
+
+    <bean class="org.springframework.orm.hibernate5.HibernateTemplate">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+
+    </bean>
+
+    <!--获取事务管理器
+        事务管理器跟事务属性对象一样，通常用户都已经配置好了，
+        直接从spring的bean工厂获取，另外从配置也看出DataSourceTransactionManager持有dataSource
+    -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+
+    <!--一般根据前缀来注册相关的注解类
+    <tx:annotation-driven/>：支持事务注解的（@Transactional）
+    <mvc:annotation-driven/>：支持MVC注解-->
+    <tx:annotation-driven/>
+
+    <!--扫描com.dao下面的类-->
+    <context:component-scan base-package="com.dao"></context:component-scan>
+</beans>
