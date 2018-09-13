@@ -21,4 +21,14 @@ public class StudentDao {
         StudentEntity studentEntity = hibernateTemplate.get(StudentEntity.class, id);
         return studentEntity;
     }
+
+    //将student保存到
+    public void saveStudent(){
+        StudentEntity s1 = new StudentEntity();
+        s1.setName("lisi");
+        s1.setAge(19);
+
+        hibernateTemplate.save(s1);
+
+    }
 }
